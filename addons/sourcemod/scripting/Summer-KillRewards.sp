@@ -21,6 +21,7 @@
 int killCounter[MAXPLAYERS + 1];
 ConVar gC_MinKillsForReward;
 ConVar gC_sheild;
+ConVar gC_tanade;
 ConVar gC_healthshot;
 
 public Plugin myinfo = {
@@ -36,6 +37,7 @@ public void OnPluginStart() {
     HookEvent("round_start", Round_Start);
     gC_MinKillsForReward = CreateConVar("sm_KRminimumKills", "3", "on how many kills a player will be rewarded");
     gC_sheild = CreateConVar("sm_KRrewardSheild", "1", "sheild enabled in reward");
+    gC_tanade = CreateConVar("sm_KRrewardTAnade", "1", "TA Nade enabled in reward");
     gC_healthshot = CreateConVar("sm_KRrewardHealthshot", "0", "healthshot enabled in reward");
 
     // Execute the config file, create if not present
@@ -65,11 +67,13 @@ public Action Event_PlayerDeath(Event event, const char[] name, bool dontBroadca
             GivePlayerItem(attacker, "weapon_shield");
         if (GetConVarInt(gC_healthshot))
             GivePlayerItem(attacker, "weapon_healthshot");
+        if (GetConVarInt(gC_tanade))
+            GivePlayerItem(attacker, "weapon_tagrenade");
         killCounter[attacker] = 0;
     }
 }
 
 
 bool IsValidClient(int client) {
-    return client > 0 && client <= MaxClients && IsClientInGame(client) && !IsFakeClient(client);
+    return (client > 0 && client <= MaxClients && IsClientInGame(client) && !IsFakeClient(client) && IsPlayerAlive(client));
 }
